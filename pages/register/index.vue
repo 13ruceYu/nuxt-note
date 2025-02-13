@@ -17,6 +17,11 @@ const state = reactive({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   // Do something with data
   console.log(event.data)
+  const res = await $fetch('/api/user', {
+    method: 'POST',
+    body: JSON.stringify(event.data)
+  })
+  console.log(res)
 }
 </script>
 
