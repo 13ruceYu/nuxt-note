@@ -1,27 +1,33 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '#ui/types'
-import { z } from 'zod'
-
-const schema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Must be at least 8 characters')
-})
-
-type Schema = z.output<typeof schema>
+import { userSchema, type UserSchema } from '~/server/types/schema'
 
 const state = reactive({
   email: undefined,
   password: undefined
 })
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // Do something with data
-  console.log(event.data)
-  const res = await $fetch('/api/user', {
-    method: 'POST',
-    body: JSON.stringify(event.data)
-  })
-  console.log(res)
+const router = useRouter()
+const toast = useToast()
+
+async function onSubmit(event: FormSubmitEvent<UserSchema>) {
+  try {
+    const res = await $fetch('/api/user', {
+      method: 'POST',
+      body: JSON.stringify(event.data)
+    })
+    toast.add({
+      title: 'Success',
+      description: 'Account created successfully',
+      callback: () => router.push('/')
+    })
+  } catch (error: any) {
+    toast.add({
+      title: 'Error',
+      description: error.response._data.message,
+      color: 'red'
+    })
+  }
 }
 </script>
 
@@ -38,7 +44,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             </NuxtLink> to your account
           </div>
         </div>
-        <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+        <UForm :schema="userSchema" :state="state" class="space-y-4" @submit="onSubmit">
           <UFormGroup label="Email" name="email">
             <UInput v-model="state.email" />
           </UFormGroup>
@@ -46,7 +52,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             <UInput v-model="state.password" type="password" />
           </UFormGroup>
           <UButton type="submit">
-            Submit
+            Sign up
           </UButton>
         </UForm>
       </div>
