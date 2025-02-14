@@ -19,7 +19,8 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
     toast.add({
       title: 'Success',
       description: 'Account created successfully',
-      callback: () => router.push('/')
+      callback: () => router.push('/'),
+      timeout: 2000
     })
   } catch (error: any) {
     toast.add({

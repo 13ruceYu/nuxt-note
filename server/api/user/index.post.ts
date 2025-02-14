@@ -20,6 +20,9 @@ export default defineEventHandler(async (event) => {
       }
     })
 
+    const token = signJwt({ id: res.id })
+    setCookie(event, 'NuxtNoteJWT', token)
+
     return {
       statusCode: 200,
       body: JSON.stringify(res)
