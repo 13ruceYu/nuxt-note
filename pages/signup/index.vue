@@ -2,6 +2,10 @@
 import type { FormSubmitEvent } from '#ui/types'
 import { userSchema, type UserSchema } from '~/server/types/schema'
 
+useHead({
+  title: 'Sign up'
+})
+
 const state = reactive({
   email: undefined,
   password: undefined
@@ -12,7 +16,7 @@ const toast = useToast()
 
 async function onSubmit(event: FormSubmitEvent<UserSchema>) {
   try {
-    const res = await $fetch('/api/user', {
+    await $fetch('/api/signup', {
       method: 'POST',
       body: JSON.stringify(event.data)
     })
@@ -20,13 +24,13 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
       title: 'Success',
       description: 'Account created successfully',
       callback: () => router.push('/'),
-      timeout: 2000
+      timeout: 1000
     })
   } catch (error: any) {
     toast.add({
       title: 'Error',
       description: error.response._data.message,
-      color: 'red'
+      color: 'red',
     })
   }
 }
@@ -41,7 +45,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
         </h1>
         <div class="my-4">
           <div>Sign up for a free account</div>
-          <div class="text-sm text-gray-400">Already registered? <NuxtLink to="/login" class="text-primary">Login in
+          <div class="text-sm text-gray-400">Already Signed up? <NuxtLink to="/login" class="text-primary">Log in
             </NuxtLink> to your account
           </div>
         </div>

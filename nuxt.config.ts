@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   app: {
     head: {
       charset: 'utf-8',
-      title: 'Nuxt Note',
       meta: [
         {
           name: 'description',

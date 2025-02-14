@@ -3,7 +3,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   const jwt = useCookie('NuxtNoteJWT')
 
-  const publicPages = ['/register', '/login']
+  const publicPages = ['/signup', '/login']
 
   if (!jwt.value && !publicPages.includes(to.path)) {
     return navigateTo('/login')

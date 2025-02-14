@@ -5,18 +5,17 @@ import { userSchema } from '~/server/types/schema'
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    
+
     // Validate request data
     const validatedData = userSchema.parse(body)
-    
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(validatedData.password, salt);
-    
+
+    // Hash password - no need to store salt separately
+    const hash = await bcrypt.hash(validatedData.password, 10)
+
     const res = await prisma.user.create({
       data: {
         email: validatedData.email,
-        password: hash,
-        salt: salt
+        password: hash
       }
     })
 
@@ -35,7 +34,7 @@ export default defineEventHandler(async (event) => {
         message: error.errors.map((err: any) => err.message).join('. ')
       })
     }
-    
+
     // Handle duplicate email error
     if (error.code === 'P2002') {
       throw createError({
@@ -43,9 +42,7 @@ export default defineEventHandler(async (event) => {
         message: 'Email already exists'
       })
     }
-    
-    // Handle other errors
-    console.error('Server error:', error)
+
     throw createError({
       statusCode: 500,
       message: 'Internal server error'
