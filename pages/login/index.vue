@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { FormSubmitEvent } from '#ui/types'
-import { userSchema, type UserSchema } from '~/server/types/schema'
 
 useHead({
   title: 'Log in'
@@ -14,11 +12,11 @@ const state = reactive({
 const router = useRouter()
 const toast = useToast()
 
-async function onSubmit(event: FormSubmitEvent<UserSchema>) {
+async function onSubmit() {
   try {
     await $fetch('/api/login', {
       method: 'POST',
-      body: JSON.stringify(event.data)
+      body: JSON.stringify(state)
     })
     toast.add({
       title: 'Success',
@@ -49,9 +47,9 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             </NuxtLink> your account
           </div>
         </div>
-        <UForm :schema="userSchema" :state="state" class="space-y-4" @submit="onSubmit">
+        <UForm :state="state" class="space-y-4" @submit="onSubmit">
           <UFormGroup label="Email" name="email">
-            <UInput v-model="state.email" />
+            <UInput type="email" v-model="state.email" />
           </UFormGroup>
           <UFormGroup label="Password" name="password">
             <UInput v-model="state.password" type="password" />
