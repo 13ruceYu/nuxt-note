@@ -8,6 +8,7 @@ const notes = ref<ExtendedNote[] | null>([])
 const currentNote = ref<ExtendedNote | null>(null)
 const currentNoteText = ref<string>('')
 const isInitialSet = ref(false)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 onMounted(async () => {
   const res = await $fetch<Note[]>('/api/notes')
@@ -24,16 +25,18 @@ const todayNotes = computed(() => {
     const noteDate = new Date(note.updatedAt)
     const today = new Date()
     return noteDate.toDateString() === today.toDateString()
-  }) ?? []
+  }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
 })
+
 const yesterdayNotes = computed(() => {
   return notes.value?.filter(note => {
     const noteDate = new Date(note.updatedAt)
     const today = new Date()
     today.setDate(today.getDate() - 1)
     return noteDate.toDateString() === today.toDateString()
-  }) ?? []
+  }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
 })
+
 const earlierNotes = computed(() => {
   return notes.value?.filter(note => {
     const noteDate = new Date(note.updatedAt)
@@ -42,7 +45,7 @@ const earlierNotes = computed(() => {
     yesterday.setDate(yesterday.getDate() - 1)
 
     return (noteDate.toDateString() !== yesterday.toDateString() && noteDate.toDateString() !== today.toDateString())
-  }) ?? []
+  }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
 })
 
 function setCurrentNote(note: ExtendedNote) {
@@ -51,6 +54,7 @@ function setCurrentNote(note: ExtendedNote) {
   currentNoteText.value = note.text
   nextTick(() => {
     isInitialSet.value = false
+    textareaRef.value?.focus()
   })
 }
 
@@ -156,9 +160,10 @@ async function deleteNote(noteId: number) {
         </UButton>
       </div>
       <div class="p-6 flex justify-center flex-grow">
-        <div class="flex flex-col">
+        <div class="flex flex-col w-full max-w-[30rem]">
           <div class="h-10 text-gray-600">{{ currentNote?.updatedDate }}</div>
-          <textarea v-model="currentNoteText" class="w-[30rem] flex-grow outline-none resize-none border"></textarea>
+          <textarea ref="textareaRef" v-model="currentNoteText"
+            class="w-full flex-grow outline-none resize-none border"></textarea>
         </div>
       </div>
     </div>
