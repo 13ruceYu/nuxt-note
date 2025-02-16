@@ -124,12 +124,41 @@ async function deleteNote(noteId: number) {
     console.error('Failed to delete note:', error)
   }
 }
+
+async function handleLogout() {
+  try {
+    await $fetch('/api/logout', {
+      method: 'POST'
+    })
+    navigateTo('/login')
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
 </script>
 
 <template>
   <div class="flex h-screen">
     <div class="bg-black/50 w-[20rem] shrink-0 p-4">
-      <Logo class="mb-4" />
+      <div class="flex justify-between items-center mb-4">
+        <Logo />
+        <UPopover>
+          <UButton variant="ghost" icon="carbon:settings" />
+          <template #panel>
+            <div class="w-60">
+              <div class="p-4">
+                <div class="text-sm font-medium">Account</div>
+                <!-- <div class="text-xs text-gray-500 mt-1">{{ $auth?.user?.email }}</div> -->
+              </div>
+              <div class="p-1">
+                <UButton variant="ghost" color="red" class="w-full justify-start" @click="handleLogout">
+                  Log out
+                </UButton>
+              </div>
+            </div>
+          </template>
+        </UPopover>
+      </div>
       <div>
         <div class="mb-1" v-if="todayNotes.length">Today</div>
         <div>
@@ -163,7 +192,7 @@ async function deleteNote(noteId: number) {
         <div class="flex flex-col w-full max-w-[30rem]">
           <div class="h-10 text-gray-600">{{ currentNote?.updatedDate }}</div>
           <textarea ref="textareaRef" v-model="currentNoteText"
-            class="w-full flex-grow outline-none resize-none border"></textarea>
+            class="w-full flex-grow outline-none resize-none"></textarea>
         </div>
       </div>
     </div>
