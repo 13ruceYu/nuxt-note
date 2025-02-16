@@ -99,6 +99,27 @@ async function createNote() {
     console.error('Failed to create note:', error)
   }
 }
+
+async function deleteNote(noteId: number) {
+  if (!confirm('Are you sure you want to delete this note?')) return
+
+  try {
+    await $fetch(`/api/notes/${noteId}`, {
+      method: 'DELETE'
+    })
+
+    // Remove note from local state
+    notes.value = notes.value?.filter(note => note.id !== noteId) ?? []
+
+    // Clear current note if it was deleted
+    if (currentNote.value?.id === noteId) {
+      currentNote.value = null
+      currentNoteText.value = ''
+    }
+  } catch (error) {
+    console.error('Failed to delete note:', error)
+  }
+}
 </script>
 
 <template>
@@ -130,7 +151,9 @@ async function createNote() {
         <UButton color="gray" variant="ghost" icon="carbon:document-add" @click="createNote">
           Create Note
         </UButton>
-        <u-button color="gray" variant="ghost" icon="carbon:trash-can"></u-button>
+        <UButton v-if="currentNote" color="red" variant="ghost" icon="carbon:trash-can"
+          @click="deleteNote(currentNote.id)">
+        </UButton>
       </div>
       <div class="p-6 flex justify-center flex-grow">
         <div class="flex flex-col">
