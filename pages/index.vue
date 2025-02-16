@@ -21,14 +21,14 @@ onMounted(async () => {
 
 const todayNotes = computed(() => {
   return notes.value?.filter(note => {
-    const noteDate = new Date(note.createdAt)
+    const noteDate = new Date(note.updatedAt)
     const today = new Date()
     return noteDate.toDateString() === today.toDateString()
   }) ?? []
 })
 const yesterdayNotes = computed(() => {
   return notes.value?.filter(note => {
-    const noteDate = new Date(note.createdAt)
+    const noteDate = new Date(note.updatedAt)
     const today = new Date()
     today.setDate(today.getDate() - 1)
     return noteDate.toDateString() === today.toDateString()
@@ -36,7 +36,7 @@ const yesterdayNotes = computed(() => {
 })
 const earlierNotes = computed(() => {
   return notes.value?.filter(note => {
-    const noteDate = new Date(note.createdAt)
+    const noteDate = new Date(note.updatedAt)
     const today = new Date()
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
@@ -77,6 +77,28 @@ watch(currentNoteText, () => {
   }
 })
 
+// Add createNote
+async function createNote() {
+  try {
+    const note = await $fetch<Note>('/api/notes', {
+      method: 'POST'
+    })
+
+    // Add updatedDate to the new note
+    const extendedNote: ExtendedNote = {
+      ...note,
+      updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD').value
+    }
+
+    // Add to notes list
+    notes.value = [extendedNote, ...(notes.value ?? [])]
+
+    // Set as current note
+    setCurrentNote(extendedNote)
+  } catch (error) {
+    console.error('Failed to create note:', error)
+  }
+}
 </script>
 
 <template>
@@ -105,7 +127,8 @@ watch(currentNoteText, () => {
     </div>
     <div class="flex-grow flex flex-col">
       <div class="flex justify-between items-center p-4">
-        <UButton color="gray" variant="ghost" icon="carbon:document-add">Create Note
+        <UButton color="gray" variant="ghost" icon="carbon:document-add" @click="createNote">
+          Create Note
         </UButton>
         <u-button color="gray" variant="ghost" icon="carbon:trash-can"></u-button>
       </div>
