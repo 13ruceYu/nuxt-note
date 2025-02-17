@@ -20,33 +20,18 @@ onMounted(async () => {
   })
 })
 
-const todayNotes = computed(() => {
+const filterNotesByDate = (daysAgo: number = 2) => {
+  const targetDate = new Date()
+  targetDate.setDate(targetDate.getDate() - daysAgo)
   return notes.value?.filter(note => {
     const noteDate = new Date(note.updatedAt)
-    const today = new Date()
-    return noteDate.toDateString() === today.toDateString()
+    return noteDate.toDateString() === targetDate.toDateString()
   }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
-})
+}
 
-const yesterdayNotes = computed(() => {
-  return notes.value?.filter(note => {
-    const noteDate = new Date(note.updatedAt)
-    const today = new Date()
-    today.setDate(today.getDate() - 1)
-    return noteDate.toDateString() === today.toDateString()
-  }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
-})
-
-const earlierNotes = computed(() => {
-  return notes.value?.filter(note => {
-    const noteDate = new Date(note.updatedAt)
-    const today = new Date()
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-
-    return (noteDate.toDateString() !== yesterday.toDateString() && noteDate.toDateString() !== today.toDateString())
-  }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
-})
+const todayNotes = computed(() => filterNotesByDate(0))
+const yesterdayNotes = computed(() => filterNotesByDate(1))
+const earlierNotes = computed(() => filterNotesByDate())
 
 function setCurrentNote(note: ExtendedNote) {
   isInitialSet.value = true
@@ -138,57 +123,31 @@ async function deleteNote(noteId: number) {
     console.error('Failed to delete note:', error)
   }
 }
-
-async function handleLogout() {
-  try {
-    await $fetch('/api/logout', {
-      method: 'POST'
-    })
-    navigateTo('/login')
-  } catch (error) {
-    console.error('Logout failed:', error)
-  }
-}
 </script>
 
 <template>
   <div class="flex h-screen">
-    <div class="bg-black/50 w-[20rem] shrink-0 p-4">
+    <div class="bg-neutral-100 dark:bg-neutral-900 w-[20rem] shrink-0 p-4">
       <div class="flex justify-between items-center mb-4">
         <Logo />
-        <UPopover>
-          <UButton variant="ghost" icon="carbon:settings" />
-          <template #panel>
-            <div class="w-60">
-              <div class="p-4">
-                <div class="text-sm font-medium">Account</div>
-                <!-- <div class="text-xs text-gray-500 mt-1">{{ $auth?.user?.email }}</div> -->
-              </div>
-              <div class="p-1">
-                <UButton variant="ghost" color="red" class="w-full justify-start" @click="handleLogout">
-                  Log out
-                </UButton>
-              </div>
-            </div>
-          </template>
-        </UPopover>
+        <Settings></Settings>
       </div>
       <div>
         <div class="mb-1" v-if="todayNotes.length">Today</div>
         <div>
-          <NoteListItem v-for="note in todayNotes" :key="note.id" :note="note" @click="setCurrentNote(note)"
-            :active="note.id === currentNote?.id">
+          <NoteListItem class="mb-1" v-for="note in todayNotes" :key="note.id" :note="note"
+            @click="setCurrentNote(note)" :active="note.id === currentNote?.id">
           </NoteListItem>
         </div>
         <div class="mb-1 mt-4" v-if="yesterdayNotes.length">Yesterday</div>
         <div>
-          <NoteListItem v-for="note in yesterdayNotes" :key="note.id" :note="note" :active="note.id === currentNote?.id"
-            @click="setCurrentNote(note)"></NoteListItem>
+          <NoteListItem class="mb-1" v-for="note in yesterdayNotes" :key="note.id" :note="note"
+            :active="note.id === currentNote?.id" @click="setCurrentNote(note)"></NoteListItem>
         </div>
         <div class="mb-1 mt-4" v-if="earlierNotes.length">Earlier</div>
         <div>
-          <NoteListItem v-for="note in earlierNotes" :key="note.id" :note="note" :active="note.id === currentNote?.id"
-            @click="setCurrentNote(note)">
+          <NoteListItem class="mb-1" v-for="note in earlierNotes" :key="note.id" :note="note"
+            :active="note.id === currentNote?.id" @click="setCurrentNote(note)">
           </NoteListItem>
         </div>
       </div>
@@ -205,8 +164,8 @@ async function handleLogout() {
       <div class="p-6 flex justify-center flex-grow">
         <div class="flex flex-col w-full max-w-[30rem]">
           <div class="h-10 text-gray-600">{{ currentNote?.updatedDate }}</div>
-          <textarea ref="textareaRef" v-model="currentNoteText"
-            class="w-full flex-grow outline-none resize-none"></textarea>
+          <textarea ref="textareaRef" v-model="currentNoteText" class="w-full flex-grow outline-none resize-none"
+            placeholder="start writing first..."></textarea>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div :class="['px-4 py-3 rounded-lg cursor-pointer', active ? 'bg-primary/50' : 'hover:bg-primary/10']">
+  <div :class="['px-4 py-3 rounded-lg cursor-pointer', active ? 'bg-primary/60' : 'hover:bg-primary/20']">
     <div class="leading-none mb-2">{{ note.title }}</div>
     <div class="text-xs flex">
       <div class="mr-4 shrink-0">{{ note.updatedDate }}</div>
