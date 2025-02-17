@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUserStore } from '~/store/user'
+
 useHead({
   title: 'Log in'
 })
@@ -8,21 +10,17 @@ const state = reactive({
   password: undefined
 })
 
-const router = useRouter()
 const toast = useToast()
 
 async function onSubmit() {
   try {
-    await $fetch('/api/login', {
+    const { body } = await $fetch('/api/login', {
       method: 'POST',
       body: JSON.stringify(state)
     })
-    toast.add({
-      title: 'Success',
-      description: 'Log in successfully',
-      callback: () => router.push('/'),
-      timeout: 1000
-    })
+    const userStore = useUserStore()
+    userStore.setUser(JSON.parse(body))
+    navigateTo('/')
   } catch (error: any) {
     toast.add({
       title: 'Error',

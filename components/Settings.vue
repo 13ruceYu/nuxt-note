@@ -1,9 +1,14 @@
 <script lang="ts" setup>
+import { useUserStore } from '~/store/user'
+
+const userStore = useUserStore()
+
 async function handleLogout() {
   try {
     await $fetch('/api/logout', {
       method: 'POST'
     })
+    userStore.clearUser()
     navigateTo('/login')
   } catch (error) {
     console.error('Logout failed:', error)
@@ -15,11 +20,16 @@ async function handleLogout() {
   <UPopover>
     <UButton variant="ghost" icon="carbon:settings" />
     <template #panel>
-      <div class="w-60 p-2">
-        <div class="px-3">Account</div>
-        <div class="flex flex-col">
+      <div class="w-60">
+        <div class="p-4 border-b">
+          <div class="text-sm font-medium">Account</div>
+          <div v-if="userStore.user" class="text-xs text-gray-500 mt-1">
+            {{ userStore.user.email }}
+          </div>
+        </div>
+        <div class="p-1 flex flex-col">
           <ThemeToggler></ThemeToggler>
-          <UButton variant="ghost" icon="carbon:logout" color="gray" class="justify-start" @click="handleLogout">
+          <UButton variant="ghost" icon="carbon:logout" color="red" class="justify-start" @click="handleLogout">
             Log out
           </UButton>
         </div>
