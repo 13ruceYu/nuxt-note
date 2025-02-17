@@ -63,12 +63,26 @@ const updateNote = useDebounceFn(async () => {
   if (!currentNote.value) return
 
   try {
-    await $fetch(`/api/notes/${currentNote.value.id}`, {
+    const updatedNote = await $fetch(`/api/notes/${currentNote.value.id}`, {
       method: 'PATCH',
       body: {
         text: currentNoteText.value
       }
     })
+
+    // Update the note in the local list
+    if (notes.value) {
+      notes.value = notes.value.map(note =>
+        note.id === currentNote.value?.id
+          ? {
+            ...note,
+            text: currentNoteText.value,
+            updatedAt: new Date(updatedNote.updatedAt),
+            updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD').value
+          }
+          : note
+      )
+    }
   } catch (error) {
     console.error('Failed to update note:', error)
   }
