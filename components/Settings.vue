@@ -21,8 +21,8 @@ async function handleLogout() {
     <UButton variant="ghost" icon="carbon:settings" />
     <template #panel>
       <div class="w-60">
-        <div class="p-4 border-b">
-          <div class="text-sm font-medium">Account</div>
+        <div class="p-4">
+          <div class="text-sm font-medium leading-none">Account</div>
           <div v-if="userStore.user" class="text-xs text-gray-500 mt-1">
             {{ userStore.user.email }}
           </div>

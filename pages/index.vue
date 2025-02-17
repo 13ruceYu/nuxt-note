@@ -7,6 +7,7 @@ import { useDebounceFn } from '@vueuse/core';
 const notes = ref<ExtendedNote[] | null>([])
 const currentNote = ref<ExtendedNote | null>(null)
 const currentNoteText = ref<string>('')
+const currentNoteTitle = ref<string>('')
 const isInitialSet = ref(false)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
@@ -37,6 +38,7 @@ function setCurrentNote(note: ExtendedNote) {
   isInitialSet.value = true
   currentNote.value = note
   currentNoteText.value = note.text
+  currentNoteTitle.value = note.title
   nextTick(() => {
     isInitialSet.value = false
     textareaRef.value?.focus()
@@ -51,7 +53,8 @@ const updateNote = useDebounceFn(async () => {
     const updatedNote = await $fetch(`/api/notes/${currentNote.value.id}`, {
       method: 'PATCH',
       body: {
-        text: currentNoteText.value
+        text: currentNoteText.value,
+        title: currentNoteTitle.value
       }
     })
 
@@ -62,6 +65,7 @@ const updateNote = useDebounceFn(async () => {
           ? {
             ...note,
             text: currentNoteText.value,
+            title: currentNoteTitle.value,
             updatedAt: new Date(updatedNote.updatedAt),
             updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD').value
           }
@@ -75,6 +79,13 @@ const updateNote = useDebounceFn(async () => {
 
 // Watch for changes in note text
 watch(currentNoteText, () => {
+  if (currentNote.value && !isInitialSet.value) {
+    updateNote()
+  }
+})
+
+// Add title watch
+watch(currentNoteTitle, () => {
   if (currentNote.value && !isInitialSet.value) {
     updateNote()
   }
@@ -163,9 +174,11 @@ async function deleteNote(noteId: number) {
       </div>
       <div class="p-6 flex justify-center flex-grow">
         <div class="flex flex-col w-full max-w-[30rem]">
-          <div class="h-10 text-gray-600">{{ currentNote?.updatedDate }}</div>
+          <div class="h-10 text-gray-400 text-sm">{{ currentNote?.updatedDate }}</div>
+          <input v-model="currentNoteTitle" class="text-xl font-medium mb-4 outline-none bg-transparent"
+            placeholder="Untitled" />
           <textarea ref="textareaRef" v-model="currentNoteText" class="w-full flex-grow outline-none resize-none"
-            placeholder="start writing first..."></textarea>
+            placeholder="Start writing..."></textarea>
         </div>
       </div>
     </div>

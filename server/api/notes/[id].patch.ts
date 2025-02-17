@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
     const updatedNote = await prisma.note.update({
       where: { id: noteId },
-      data: { text: body.text }
+      data: { text: body.text, title: body.title }
     })
 
     return updatedNote
