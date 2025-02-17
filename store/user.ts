@@ -15,6 +15,18 @@ export const useUserStore = defineStore('user', {
     },
     clearUser() {
       this.user = null
+    },
+    async fetchUser() {
+      try {
+        const user = await $fetch('/api/me')
+        if (user) {
+          this.setUser(user)
+        } else {
+          this.clearUser()
+        }
+      } catch {
+        this.clearUser()
+      }
     }
   }
 })
