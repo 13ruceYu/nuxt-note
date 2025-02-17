@@ -1,4 +1,4 @@
-import prisma from "~/lib/prisma"
+import prisma from "~/prisma/db"
 import { verifyJwt } from "~/server/utils/jwt"
 
 export default defineEventHandler(async (event) => {

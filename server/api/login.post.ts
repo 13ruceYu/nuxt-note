@@ -1,4 +1,4 @@
-import prisma from "~/lib/prisma"
+import prisma from "~/prisma/db"
 import bcrypt from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {

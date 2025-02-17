@@ -1,4 +1,4 @@
-import prisma from "~/lib/prisma"
+import prisma from "~/prisma/db"
 import bcrypt from 'bcryptjs'
 import { userSchema } from '~/server/types/schema'
 
