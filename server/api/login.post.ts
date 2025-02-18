@@ -1,43 +1,41 @@
-import prisma from "~/prisma/db"
 import bcrypt from 'bcryptjs'
+import prisma from "~/prisma/db"
+import { validateSchema } from '~/server/utils/validation'
+import { loginSchema } from '~/server/types/schema'
 
 export default defineEventHandler(async (event) => {
-  try {
-    const body = await readBody(event)
+  const body = await readBody(event)
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email: body.email
-      }
-    })
+  // 输入验证
+  const validatedData = validateSchema(loginSchema, body)
 
-    if (!user) {
-      throw createError({
-        statusCode: 401,
-        message: 'Invalid email or password'
-      })
-    }
+  // 查找用户
+  const user = await prisma.user.findUnique({
+    where: { email: validatedData.email }
+  })
 
-    const validPassword = await bcrypt.compare(body.password, user.password)
-    if (!validPassword) {
-      throw createError({
-        statusCode: 401,
-        message: 'Invalid email or password'
-      })
-    }
-
-    const token = signJwt({ id: user.id })
-
-    setCookie(event, 'NuxtNoteJWT', token)
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(user)
-    }
-  } catch (error: any) {
+  if (!user) {
     throw createError({
-      statusCode: 500,
-      message: error
+      statusCode: 401,
+      message: 'Invalid credentials'
     })
+  }
+
+  // 验证密码
+  const validPassword = await bcrypt.compare(validatedData.password, user.password)
+  if (!validPassword) {
+    throw createError({
+      statusCode: 401,
+      message: 'Invalid credentials'
+    })
+  }
+
+  // JWT token 生成与设置
+  const token = signJwt({ id: user.id })
+  setCookie(event, 'NuxtNoteJWT', token)
+
+  return {
+    id: user.id,
+    email: user.email,
   }
 })

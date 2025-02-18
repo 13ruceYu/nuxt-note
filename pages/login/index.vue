@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from '#ui/types'
+import { loginSchema, type LoginUser } from '~/server/types/schema'
 import { useUserStore } from '~/store/user'
 
 useHead({
@@ -12,19 +14,19 @@ const state = reactive({
 
 const toast = useToast()
 
-async function onSubmit() {
+async function onSubmit(event: FormSubmitEvent<LoginUser>) {
   try {
-    const { body } = await $fetch('/api/login', {
+    const res = await $fetch('/api/login', {
       method: 'POST',
-      body: JSON.stringify(state)
+      body: JSON.stringify(event.data)
     })
     const userStore = useUserStore()
-    userStore.setUser(JSON.parse(body))
+    userStore.setUser(res)
     navigateTo('/')
   } catch (error: any) {
     toast.add({
       title: 'Error',
-      description: error.response._data.message,
+      description: error.data.message,
       color: 'red',
     })
   }
@@ -41,7 +43,7 @@ async function onSubmit() {
         your account
       </div>
     </div>
-    <UForm :state="state" class="space-y-4" @submit="onSubmit">
+    <UForm :schema="loginSchema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Email" name="email">
         <UInput type="email" v-model="state.email" />
       </UFormGroup>

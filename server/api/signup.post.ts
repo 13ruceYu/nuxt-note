@@ -1,13 +1,14 @@
 import prisma from "~/prisma/db"
 import bcrypt from 'bcryptjs'
-import { userSchema } from '~/server/types/schema'
+import { signupSchema } from '~/server/types/schema'
+import { validateSchema } from "../utils/validation"
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
 
     // Validate request data
-    const validatedData = userSchema.parse(body)
+    const validatedData = validateSchema(signupSchema, body)
 
     // Hash password - no need to store salt separately
     const hash = await bcrypt.hash(validatedData.password, 10)
@@ -27,25 +28,9 @@ export default defineEventHandler(async (event) => {
       body: JSON.stringify(res)
     }
   } catch (error: any) {
-    // Handle Zod validation errors
-    if (error.name === 'ZodError') {
-      throw createError({
-        statusCode: 400,
-        message: error.errors.map((err: any) => err.message).join('. ')
-      })
-    }
-
-    // Handle duplicate email error
-    if (error.code === 'P2002') {
-      throw createError({
-        statusCode: 409,
-        message: 'Email already exists'
-      })
-    }
-
     throw createError({
-      statusCode: 500,
-      message: 'Internal server error'
+      statusCode: error.statusCode || 500,
+      message: error.message || 'Failed to create user'
     })
   }
 })

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '#ui/types'
-import { userSchema, type UserSchema } from '~/server/types/schema'
+import { signupSchema, type SignupUser } from '~/server/types/schema'
 
 useHead({
   title: 'Sign up'
@@ -14,7 +14,7 @@ const state = reactive({
 const router = useRouter()
 const toast = useToast()
 
-async function onSubmit(event: FormSubmitEvent<UserSchema>) {
+async function onSubmit(event: FormSubmitEvent<SignupUser>) {
   try {
     await $fetch('/api/signup', {
       method: 'POST',
@@ -29,7 +29,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
   } catch (error: any) {
     toast.add({
       title: 'Error',
-      description: error.response._data.message,
+      description: error.data.message,
       color: 'red',
     })
   }
@@ -45,7 +45,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
         <NuxtLink to="/login" class="text-primary">Log in</NuxtLink>
       </div>
     </div>
-    <UForm :state="state" class="space-y-4" @submit="onSubmit">
+    <UForm :schema="signupSchema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Email" name="email">
         <UInput type="email" v-model="state.email" />
       </UFormGroup>

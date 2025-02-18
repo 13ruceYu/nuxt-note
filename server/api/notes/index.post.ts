@@ -15,10 +15,6 @@ export default defineEventHandler(async (event) => {
 
     return note
   } catch (error: any) {
-    console.error('Error creating note:', error)
-    throw createError({
-      statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to create note'
-    })
+    throw createError(error)
   }
 })

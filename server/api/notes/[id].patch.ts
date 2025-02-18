@@ -26,7 +26,6 @@ export default defineEventHandler(async (event) => {
 
     return updatedNote
   } catch (error: any) {
-    console.error('Error updating note:', error)
     throw createError({
       statusCode: error.statusCode || 500,
       message: error.message || 'Failed to update note'

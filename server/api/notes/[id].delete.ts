@@ -26,7 +26,6 @@ export default defineEventHandler(async (event) => {
 
     return { success: true }
   } catch (error: any) {
-    console.error('Error deleting note:', error)
     throw createError({
       statusCode: error.statusCode || 500,
       message: error.message || 'Failed to delete note'
