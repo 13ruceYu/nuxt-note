@@ -138,12 +138,12 @@ async function deleteNote(noteId: number) {
 
 <template>
   <div class="flex h-screen">
-    <div class="bg-neutral-100 dark:bg-neutral-900 w-[20rem] shrink-0 p-4">
-      <div class="flex justify-between items-center mb-4">
+    <div class="bg-neutral-100 dark:bg-neutral-900 w-[20rem] shrink-0 p-4 flex flex-col">
+      <div class="flex justify-between items-center mb-4 flex-shrink-0">
         <Logo />
         <Settings></Settings>
       </div>
-      <div>
+      <div class="overflow-y-auto">
         <div class="mb-1" v-if="todayNotes.length">Today</div>
         <div>
           <NoteListItem class="mb-1" v-for="note in todayNotes" :key="note.id" :note="note"
@@ -177,10 +177,30 @@ async function deleteNote(noteId: number) {
           <div class="h-10 text-gray-400 text-sm">{{ currentNote?.updatedDate }}</div>
           <input v-model="currentNoteTitle" class="text-xl font-medium mb-4 outline-none bg-transparent"
             placeholder="Untitled" />
-          <textarea ref="textareaRef" v-model="currentNoteText" class="w-full flex-grow outline-none resize-none"
-            placeholder="Start writing..."></textarea>
+          <textarea ref="textareaRef" v-model="currentNoteText"
+            class="overflow-y-auto w-full flex-grow outline-none resize-none" placeholder="Start writing..."></textarea>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+</style>
