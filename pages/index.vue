@@ -11,6 +11,11 @@ const currentNoteTitle = ref<string>('')
 const isInitialSet = ref(false)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
+const isSidebarOpen = ref(true)
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value
+}
+
 onMounted(async () => {
   const res = await $fetch<Note[]>('/api/notes')
   notes.value = res.map(note => {
@@ -138,39 +143,52 @@ async function deleteNote(noteId: number) {
 
 <template>
   <div class="flex h-screen">
-    <div class="bg-neutral-100 dark:bg-neutral-900 w-[20rem] shrink-0 p-4 flex flex-col">
-      <div class="flex justify-between items-center mb-4 flex-shrink-0">
-        <Logo />
-        <Settings></Settings>
-      </div>
-      <div class="overflow-y-auto">
-        <div class="mb-1" v-if="todayNotes.length">Today</div>
-        <div>
-          <NoteListItem class="mb-1" v-for="note in todayNotes" :key="note.id" :note="note"
-            @click="setCurrentNote(note)" :active="note.id === currentNote?.id">
-          </NoteListItem>
+    <!-- Sidebar with transition -->
+    <div
+      class="bg-neutral-100 z-10 md:relative fixed h-screen dark:bg-neutral-900 shrink-0 transition-all duration-300 overflow-hidden"
+      :class="[
+        isSidebarOpen ? 'w-[20rem]' : 'w-0',
+      ]">
+      <div class="p-4 flex flex-col h-full">
+        <div class="flex justify-between items-center mb-4 flex-shrink-0">
+          <Logo />
+          <Settings />
         </div>
-        <div class="mb-1 mt-4" v-if="yesterdayNotes.length">Yesterday</div>
-        <div>
-          <NoteListItem class="mb-1" v-for="note in yesterdayNotes" :key="note.id" :note="note"
-            :active="note.id === currentNote?.id" @click="setCurrentNote(note)"></NoteListItem>
-        </div>
-        <div class="mb-1 mt-4" v-if="earlierNotes.length">Earlier</div>
-        <div>
-          <NoteListItem class="mb-1" v-for="note in earlierNotes" :key="note.id" :note="note"
-            :active="note.id === currentNote?.id" @click="setCurrentNote(note)">
-          </NoteListItem>
+        <div class="overflow-y-auto">
+          <div class="mb-1" v-if="todayNotes.length">Today</div>
+          <div>
+            <NoteListItem class="mb-1" v-for="note in todayNotes" :key="note.id" :note="note"
+              @click="setCurrentNote(note)" :active="note.id === currentNote?.id">
+            </NoteListItem>
+          </div>
+          <div class="mb-1 mt-4" v-if="yesterdayNotes.length">Yesterday</div>
+          <div>
+            <NoteListItem class="mb-1" v-for="note in yesterdayNotes" :key="note.id" :note="note"
+              :active="note.id === currentNote?.id" @click="setCurrentNote(note)"></NoteListItem>
+          </div>
+          <div class="mb-1 mt-4" v-if="earlierNotes.length">Earlier</div>
+          <div>
+            <NoteListItem class="mb-1" v-for="note in earlierNotes" :key="note.id" :note="note"
+              :active="note.id === currentNote?.id" @click="setCurrentNote(note)">
+            </NoteListItem>
+          </div>
         </div>
       </div>
     </div>
+
+
     <div class="flex-grow flex flex-col">
       <div class="flex justify-between items-center p-4">
+        <UButton color="gray" variant="ghost"
+          :icon="isSidebarOpen ? 'carbon:side-panel-close' : 'carbon:side-panel-open'" @click="toggleSidebar" />
         <UButton color="gray" variant="ghost" icon="carbon:document-add" @click="createNote">
-          Create Note
+          New Note
         </UButton>
-        <UButton v-if="currentNote" color="red" variant="ghost" icon="carbon:trash-can"
-          @click="deleteNote(currentNote.id)">
-        </UButton>
+        <NoteSettings>
+          <UButton :disabled="!currentNote" color="red" variant="ghost" icon="carbon:trash-can"
+            @click="deleteNote(currentNote!.id)">Delete
+          </UButton>
+        </NoteSettings>
       </div>
       <div class="p-6 flex justify-center flex-grow">
         <div class="flex flex-col w-full max-w-[30rem]">
@@ -182,6 +200,9 @@ async function deleteNote(noteId: number) {
         </div>
       </div>
     </div>
+    <div @click="toggleSidebar" v-if="isSidebarOpen"
+      class="bg-neutral-700 md:hidden absolute right-0 bottom-0 left-0 top-0"></div>
+
   </div>
 </template>
 

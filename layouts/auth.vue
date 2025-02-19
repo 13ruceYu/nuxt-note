@@ -5,10 +5,10 @@ defineSlots<{
 </script>
 
 <template>
-  <div class="grid grid-cols-2 h-screen">
-    <div class="dark:bg-neutral-800 bg-neutral-100 flex flex-col justify-center items-center px-8">
-      <div class="w-full max-w-[24rem]">
-        <div>
+  <div class="grid md:grid-cols-2 h-screen">
+    <div class="dark:bg-neutral-800 bg-neutral-100 flex flex-col justify-center items-center px-4 md:px-8">
+      <div class="w-full max-w-[30rem]">
+        <div class="mb-8">
           <Logo />
         </div>
         <div class="flex flex-col">
@@ -16,7 +16,8 @@ defineSlots<{
         </div>
       </div>
     </div>
-    <div class="flex flex-col justify-center items-center italic px-8">
+    <!-- Hide on mobile, show on large screens -->
+    <div class="hidden md:flex flex-col justify-center items-center italic px-8 text-center">
       Turn mental noise into written wisdom.
     </div>
   </div>

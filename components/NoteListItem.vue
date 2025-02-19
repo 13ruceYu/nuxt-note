@@ -9,11 +9,13 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div :class="['px-4 py-3 rounded-lg cursor-pointer', active ? 'bg-primary/60' : 'hover:bg-primary/20']">
-    <div class="leading-none mb-2">{{ note.title || "Untitled" }}</div>
-    <div class="text-xs flex opacity-50">
-      <div class="mr-4 shrink-0">{{ note.updatedDate }}</div>
-      <div class="truncate">{{ note.text }}</div>
+  <div class="p-3 md:p-2 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors"
+    :class="{ 'bg-gray-200 dark:bg-neutral-800': active }" @click="$emit('click')">
+    <div class="text-base truncate">
+      {{ note.title || 'Untitled' }}
+    </div>
+    <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+      {{ note.text || 'No content' }}
     </div>
   </div>
 </template>
