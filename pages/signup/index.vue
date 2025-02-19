@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '#ui/types'
-import { signupSchema, type SignupUser } from '~/server/types/schema'
+import { signupSchema, type SignupUser } from '~/types/schema'
 
 useHead({
   title: 'Sign up'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '#ui/types'
-import { loginSchema, type LoginUser } from '~/server/types/schema'
+import { loginSchema, type LoginUser } from '~/types/schema'
 import { useUserStore } from '~/store/user'
 
 useHead({

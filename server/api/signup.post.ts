@@ -1,6 +1,6 @@
 import prisma from "~/prisma/db"
 import bcrypt from 'bcryptjs'
-import { signupSchema } from '~/server/types/schema'
+import { signupSchema } from '~/types/schema'
 import { validateSchema } from "../utils/validation"
 
 export default defineEventHandler(async (event) => {

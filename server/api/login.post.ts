@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 import prisma from "~/prisma/db"
 import { validateSchema } from '~/server/utils/validation'
-import { loginSchema } from '~/server/types/schema'
+import { loginSchema } from '~/types/schema'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
