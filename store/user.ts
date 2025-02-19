@@ -17,6 +17,11 @@ export const useUserStore = defineStore('user', {
       this.user = null
     },
     async fetchUser() {
+      const jwtCookie = useCookie('NuxtNoteJWT')
+      if (!jwtCookie.value) {
+        this.clearUser()
+        return
+      }
       try {
         const user = await $fetch('/api/me')
         if (user) {
