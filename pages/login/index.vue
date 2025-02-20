@@ -8,27 +8,23 @@ useHead({
 })
 
 const state = reactive({
-  email: undefined,
-  password: undefined
+  email: '',
+  password: ''
 })
 
-const toast = useToast()
+const { handleError } = useErrorHandler()
 
 async function onSubmit(event: FormSubmitEvent<LoginUser>) {
   try {
     const res = await $fetch('/api/login', {
       method: 'POST',
-      body: JSON.stringify(event.data)
+      body: JSON.stringify(event.data),
     })
     const userStore = useUserStore()
     userStore.setUser(res)
     navigateTo('/')
-  } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.data.message,
-      color: 'red',
-    })
+  } catch (error) {
+    handleError(error)
   }
 }
 </script>

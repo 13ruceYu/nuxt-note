@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import type { Note } from '@prisma/client';
-import { useDateFormat } from '@vueuse/core';
 import type { ExtendedNote } from '~/types/note';
-import { useDebounceFn } from '@vueuse/core';
 
 const notes = ref<ExtendedNote[] | null>([])
 const currentNote = ref<ExtendedNote | null>(null)
@@ -16,14 +14,18 @@ const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 
+const { handleError } = useErrorHandler()
+
 onMounted(async () => {
-  const res = await $fetch<Note[]>('/api/notes')
-  notes.value = res.map(note => {
-    return {
+  try {
+    const res = await $fetch<Note[]>('/api/notes')
+    notes.value = res.map(note => ({
       ...note,
       updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD').value,
-    }
-  })
+    }))
+  } catch (error) {
+    handleError(error)
+  }
 })
 
 const filterNotesByDate = (daysAgo: number = 2) => {
@@ -44,11 +46,13 @@ function setCurrentNote(note: ExtendedNote) {
   currentNote.value = note
   currentNoteText.value = note.text
   currentNoteTitle.value = note.title
+  isSidebarOpen.value = false
   nextTick(() => {
     isInitialSet.value = false
     textareaRef.value?.focus()
   })
 }
+
 
 // Debounced update function
 const updateNote = useDebounceFn(async () => {
@@ -78,7 +82,7 @@ const updateNote = useDebounceFn(async () => {
       )
     }
   } catch (error) {
-    console.error('Failed to update note:', error)
+    handleError(error)
   }
 }, 500)
 
@@ -115,7 +119,7 @@ async function createNote() {
     // Set as current note
     setCurrentNote(extendedNote)
   } catch (error) {
-    console.error('Failed to create note:', error)
+    handleError(error)
   }
 }
 
@@ -136,7 +140,7 @@ async function deleteNote(noteId: number) {
       currentNoteText.value = ''
     }
   } catch (error) {
-    console.error('Failed to delete note:', error)
+    handleError(error)
   }
 }
 </script>
@@ -201,7 +205,7 @@ async function deleteNote(noteId: number) {
       </div>
     </div>
     <div @click="toggleSidebar" v-if="isSidebarOpen"
-      class="bg-neutral-700 md:hidden absolute right-0 bottom-0 left-0 top-0"></div>
+      class="bg-neutral-900/80 md:hidden absolute right-0 bottom-0 left-0 top-0"></div>
 
   </div>
 </template>

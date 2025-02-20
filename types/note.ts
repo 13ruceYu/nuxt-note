@@ -1,11 +1,4 @@
-export interface Note {
-  id: number
-  title: string
-  text: string
-  updatedAt: Date
-  createdAt: Date
-  userId: number
-}
+import type { Note } from "@prisma/client";
 
 export interface ExtendedNote extends Note {
   updatedDate: string

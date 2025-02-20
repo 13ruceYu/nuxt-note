@@ -9,11 +9,7 @@ export function validateSchema<T>(schema: z.Schema<T>, data: unknown): T {
 
       throw createError({
         statusCode: 400,
-        message: errorMessage,
-        data: error.errors.map(err => ({
-          path: err.path.join('.'),
-          message: err.message
-        }))
+        statusMessage: errorMessage,
       })
     }
     throw error

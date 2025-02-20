@@ -3,8 +3,5 @@ export default defineEventHandler(async (event) => {
     path: '/',
   })
 
-  return {
-    statusCode: 200,
-    body: 'Logged out successfully'
-  }
+  return ""
 })

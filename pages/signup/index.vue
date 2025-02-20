@@ -13,6 +13,7 @@ const state = reactive({
 
 const router = useRouter()
 const toast = useToast()
+const { handleError } = useErrorHandler()
 
 async function onSubmit(event: FormSubmitEvent<SignupUser>) {
   try {
@@ -27,11 +28,7 @@ async function onSubmit(event: FormSubmitEvent<SignupUser>) {
       timeout: 1000
     })
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.data.message,
-      color: 'red',
-    })
+    handleError(error)
   }
 }
 </script>

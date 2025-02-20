@@ -12,7 +12,7 @@ export function verifyJwt(event: H3Event): { id: number } {
   if (!token) {
     throw createError({
       statusCode: 401,
-      message: 'Unauthorized',
+      statusMessage: 'Unauthorized',
     });
   }
   try {
@@ -22,7 +22,7 @@ export function verifyJwt(event: H3Event): { id: number } {
     deleteCookie(event, 'NuxtNoteJWT');
     throw createError({
       statusCode: 401,
-      message: 'Unauthorized',
+      statusMessage: 'Unauthorized',
     });
   }
 }

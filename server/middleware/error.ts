@@ -8,7 +8,7 @@ export default defineEventHandler((event) => {
 
     throw createError({
       statusCode: 500,
-      message: 'Internal server error'
+      statusMessage: 'Internal server error'
     })
   })
 })

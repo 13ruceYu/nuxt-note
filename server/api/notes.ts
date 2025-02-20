@@ -10,6 +10,9 @@ export default defineEventHandler(async (event) => {
     })
     return notes
   } catch (error) {
-    console.log(error)
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Notes fetch failed',
+    })
   }
 })

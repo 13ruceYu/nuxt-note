@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     if (!note || note.userId !== userId) {
       throw createError({
         statusCode: 403,
-        message: 'Forbidden'
+        statusMessage: 'Forbidden'
       })
     }
 
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   } catch (error: any) {
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Failed to update note'
+      statusMessage: error.message || 'Failed to update note'
     })
   }
 })
