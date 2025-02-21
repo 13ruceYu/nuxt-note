@@ -42,6 +42,9 @@ function setCurrentNote(note: ExtendedNote) {
   currentNote.value = note
   currentNoteText.value = note.text
   currentNoteTitle.value = note.title
+  if (window.innerWidth < 768) {
+    isSidebarOpen.value = false
+  }
   nextTick(() => {
     isInitialSet.value = false
     textareaRef.value?.focus()
@@ -143,7 +146,6 @@ async function deleteNote(noteId: number) {
 
 <template>
   <div class="flex h-screen">
-    <!-- Sidebar with transition -->
     <div
       class="fixed z-10 h-screen shrink-0 overflow-hidden bg-neutral-100 transition-all duration-300 dark:bg-neutral-900 md:relative"
       :class="[
@@ -201,8 +203,7 @@ async function deleteNote(noteId: number) {
       </div>
     </div>
     <div @click="toggleSidebar" v-if="isSidebarOpen"
-      class="absolute bottom-0 left-0 right-0 top-0 bg-neutral-700 md:hidden"></div>
-
+      class="absolute bottom-0 left-0 right-0 top-0 bg-neutral-900/60 md:hidden"></div>
   </div>
 </template>
 

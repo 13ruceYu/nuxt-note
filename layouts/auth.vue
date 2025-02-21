@@ -23,7 +23,7 @@ defineSlots<{
 
       <div class="hidden items-center justify-center md:flex">
         <div class="text-center">
-          <div class="text-3xl font-light">
+          <div class="slogan text-3xl font-light">
             Turn mental noise into written wisdom.
           </div>
         </div>
@@ -31,3 +31,9 @@ defineSlots<{
     </div>
   </AuroraBackground>
 </template>
+
+<style scoped>
+.slogan {
+  font-family: Parisienne, serif;
+}
+</style>
