@@ -14,18 +14,14 @@ const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 
-const { handleError } = useErrorHandler()
-
 onMounted(async () => {
-  try {
-    const res = await $fetch<Note[]>('/api/notes')
-    notes.value = res.map(note => ({
+  const res = await $fetch<Note[]>('/api/notes')
+  notes.value = res.map(note => {
+    return {
       ...note,
       updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD').value,
-    }))
-  } catch (error) {
-    handleError(error)
-  }
+    }
+  })
 })
 
 const filterNotesByDate = (daysAgo: number = 2) => {
@@ -46,13 +42,13 @@ function setCurrentNote(note: ExtendedNote) {
   currentNote.value = note
   currentNoteText.value = note.text
   currentNoteTitle.value = note.title
-  isSidebarOpen.value = false
   nextTick(() => {
     isInitialSet.value = false
     textareaRef.value?.focus()
   })
 }
 
+const { handleError } = useErrorHandler()
 
 // Debounced update function
 const updateNote = useDebounceFn(async () => {
@@ -149,12 +145,12 @@ async function deleteNote(noteId: number) {
   <div class="flex h-screen">
     <!-- Sidebar with transition -->
     <div
-      class="bg-neutral-100 z-10 md:relative fixed h-screen dark:bg-neutral-900 shrink-0 transition-all duration-300 overflow-hidden"
+      class="fixed z-10 h-screen shrink-0 overflow-hidden bg-neutral-100 transition-all duration-300 dark:bg-neutral-900 md:relative"
       :class="[
         isSidebarOpen ? 'w-[20rem]' : 'w-0',
       ]">
-      <div class="p-4 flex flex-col h-full">
-        <div class="flex justify-between items-center mb-4 flex-shrink-0">
+      <div class="flex h-full flex-col p-4">
+        <div class="mb-4 flex flex-shrink-0 items-center justify-between">
           <Logo />
           <Settings />
         </div>
@@ -181,8 +177,8 @@ async function deleteNote(noteId: number) {
     </div>
 
 
-    <div class="flex-grow flex flex-col">
-      <div class="flex justify-between items-center p-4">
+    <div class="flex flex-grow flex-col">
+      <div class="flex items-center justify-between p-4">
         <UButton color="gray" variant="ghost"
           :icon="isSidebarOpen ? 'carbon:side-panel-close' : 'carbon:side-panel-open'" @click="toggleSidebar" />
         <UButton color="gray" variant="ghost" icon="carbon:document-add" @click="createNote">
@@ -194,18 +190,18 @@ async function deleteNote(noteId: number) {
           </UButton>
         </NoteSettings>
       </div>
-      <div class="p-6 flex justify-center flex-grow">
-        <div class="flex flex-col w-full max-w-[30rem]">
-          <div class="h-10 text-gray-400 text-sm">{{ currentNote?.updatedDate }}</div>
-          <input v-model="currentNoteTitle" class="text-xl font-medium mb-4 outline-none bg-transparent"
+      <div class="flex flex-grow justify-center p-6">
+        <div class="flex w-full max-w-[30rem] flex-col">
+          <div class="h-10 text-sm text-gray-400">{{ currentNote?.updatedDate }}</div>
+          <input v-model="currentNoteTitle" class="mb-4 bg-transparent text-xl font-medium outline-none"
             placeholder="Untitled" />
           <textarea ref="textareaRef" v-model="currentNoteText"
-            class="overflow-y-auto w-full flex-grow outline-none resize-none" placeholder="Start writing..."></textarea>
+            class="w-full flex-grow resize-none overflow-y-auto outline-none" placeholder="Start writing..."></textarea>
         </div>
       </div>
     </div>
     <div @click="toggleSidebar" v-if="isSidebarOpen"
-      class="bg-neutral-900/80 md:hidden absolute right-0 bottom-0 left-0 top-0"></div>
+      class="absolute bottom-0 left-0 right-0 top-0 bg-neutral-700 md:hidden"></div>
 
   </div>
 </template>

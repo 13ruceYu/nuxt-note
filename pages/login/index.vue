@@ -8,8 +8,8 @@ useHead({
 })
 
 const state = reactive({
-  email: '',
-  password: ''
+  email: undefined,
+  password: undefined
 })
 
 const { handleError } = useErrorHandler()
