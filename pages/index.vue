@@ -183,7 +183,7 @@ async function deleteNote(noteId: number) {
       <div class="flex items-center justify-between p-4">
         <UButton color="gray" variant="ghost"
           :icon="isSidebarOpen ? 'carbon:side-panel-close' : 'carbon:side-panel-open'" @click="toggleSidebar" />
-        <UButton color="gray" variant="ghost" icon="carbon:document-add" @click="createNote">
+        <UButton color="gray" variant="ghost" icon="carbon:pen-fountain" @click="createNote">
           New Note
         </UButton>
         <NoteSettings>
