@@ -44,10 +44,10 @@ async function onSubmit(event: FormSubmitEvent<SignupUser>) {
     </div>
     <UForm :schema="signupSchema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Email" name="email">
-        <UInput type="email" v-model="state.email" />
+        <UInput size="md" type="email" v-model="state.email" />
       </UFormGroup>
       <UFormGroup label="Password" name="password">
-        <UInput v-model="state.password" type="password" />
+        <UInput size="md" v-model="state.password" type="password" />
       </UFormGroup>
       <UButton type="submit">Sign up</UButton>
     </UForm>

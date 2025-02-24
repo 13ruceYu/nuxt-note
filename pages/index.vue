@@ -187,6 +187,7 @@ async function deleteNote(noteId: number) {
           New Note
         </UButton>
         <NoteSettings>
+          <UButton :disabled="!currentNote" color="gray" variant="ghost" icon="carbon:information">Detail</UButton>
           <UButton :disabled="!currentNote" color="red" variant="ghost" icon="carbon:trash-can"
             @click="deleteNote(currentNote!.id)">Delete
           </UButton>

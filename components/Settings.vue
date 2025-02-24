@@ -23,11 +23,14 @@ async function handleLogout() {
       <div class="w-60">
         <div class="p-4">
           <div class="text-sm font-medium leading-none">Account</div>
-          <div v-if="userStore.user" class="text-xs text-gray-500 mt-1">
+          <div v-if="userStore.user" class="mt-1 text-xs text-gray-500">
             {{ userStore.user.email }}
           </div>
         </div>
-        <div class="p-1 flex flex-col">
+        <div class="flex flex-col p-1">
+          <UButton variant="ghost" color="gray" icon="solar:sort-vertical-outline" class="justify-start">
+            Sort by modified date
+          </UButton>
           <ThemeToggler></ThemeToggler>
           <UButton variant="ghost" icon="carbon:logout" color="red" class="justify-start" @click="handleLogout">
             Log out
