@@ -14,6 +14,10 @@ async function handleLogout() {
     console.error('Logout failed:', error)
   }
 }
+
+const toggleSort = () => {
+  userStore.setSortPreference(userStore.sortBy === 'modified' ? 'created' : 'modified')
+}
 </script>
 
 <template>
@@ -28,11 +32,11 @@ async function handleLogout() {
           </div>
         </div>
         <div class="flex flex-col p-1">
-          <UButton variant="ghost" color="gray" icon="solar:sort-vertical-outline" class="justify-start">
-            Sort by modified date
+          <UButton variant="ghost" color="gray" icon="solar:sort-vertical-outline" @click="toggleSort">
+            Sort by {{ userStore.sortBy === 'modified' ? 'modified' : 'created' }} date
           </UButton>
           <ThemeToggler></ThemeToggler>
-          <UButton variant="ghost" icon="carbon:logout" color="red" class="justify-start" @click="handleLogout">
+          <UButton variant="ghost" icon="carbon:logout" color="red" @click="handleLogout">
             Log out
           </UButton>
         </div>

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Note } from '@prisma/client';
+import { useUserStore } from '~/store/user';
 import type { ExtendedNote } from '~/types/note';
 
 const notes = ref<ExtendedNote[] | null>([])
@@ -24,18 +25,35 @@ onMounted(async () => {
   })
 })
 
-const filterNotesByDate = (daysAgo: number = 2) => {
+const userStore = useUserStore()
+
+const sortNotes = (notesToSort: ExtendedNote[]) => {
+  return [...notesToSort].sort((a, b) => {
+    const dateA = userStore.sortBy === 'modified' ? new Date(b.updatedAt) : new Date(b.createdAt)
+    const dateB = userStore.sortBy === 'modified' ? new Date(a.updatedAt) : new Date(a.createdAt)
+    return dateA.getTime() - dateB.getTime()
+  })
+}
+
+const filterNotesByDate = (daysAgo: number = 2, isEarlier: boolean = false) => {
   const targetDate = new Date()
   targetDate.setDate(targetDate.getDate() - daysAgo)
-  return notes.value?.filter(note => {
-    const noteDate = new Date(note.updatedAt)
+
+  const filtered = notes.value?.filter(note => {
+    const noteDate = new Date(userStore.sortBy === 'modified' ? note.updatedAt : note.createdAt)
+    if (isEarlier) {
+      // For earlier notes, get notes older than 2 days
+      return noteDate < new Date(new Date().setDate(new Date().getDate() - 2))
+    }
     return noteDate.toDateString() === targetDate.toDateString()
-  }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) ?? []
+  }) ?? []
+
+  return sortNotes(filtered)
 }
 
 const todayNotes = computed(() => filterNotesByDate(0))
 const yesterdayNotes = computed(() => filterNotesByDate(1))
-const earlierNotes = computed(() => filterNotesByDate())
+const earlierNotes = computed(() => filterNotesByDate(2, true))
 
 function setCurrentNote(note: ExtendedNote) {
   isInitialSet.value = true
@@ -75,7 +93,7 @@ const updateNote = useDebounceFn(async () => {
             text: currentNoteText.value,
             title: currentNoteTitle.value,
             updatedAt: new Date(updatedNote.updatedAt),
-            updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD').value
+            updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD HH:MM:ss').value
           }
           : note
       )
@@ -195,7 +213,8 @@ async function deleteNote(noteId: number) {
       </div>
       <div class="flex flex-grow justify-center p-6">
         <div class="flex w-full max-w-[30rem] flex-col">
-          <div class="h-10 text-sm text-gray-400">{{ currentNote?.updatedDate }}</div>
+          <div class="h-10 text-sm text-gray-400">{{ useDateFormat(currentNote?.updatedAt, 'YYYY-MM-DD HH:MM:ss') }}
+          </div>
           <input v-model="currentNoteTitle" class="mb-4 bg-transparent text-xl font-medium outline-none"
             placeholder="Untitled" />
           <textarea ref="textareaRef" v-model="currentNoteText"

@@ -6,8 +6,12 @@ interface User {
 }
 
 export const useUserStore = defineStore('user', {
+  persist: {
+    storage: piniaPluginPersistedstate.localStorage(),
+  },
   state: () => ({
-    user: null as User | null
+    user: null as User | null,
+    sortBy: 'modified' as 'modified' | 'created'
   }),
   actions: {
     setUser(user: User) {
@@ -32,6 +36,9 @@ export const useUserStore = defineStore('user', {
       } catch {
         this.clearUser()
       }
+    },
+    setSortPreference(sort: 'modified' | 'created') {
+      this.sortBy = sort
     }
   }
 })
