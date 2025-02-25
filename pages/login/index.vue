@@ -12,6 +12,8 @@ const state = reactive({
   password: undefined
 })
 
+const githubOAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=http://localhost:3000/api/auth/github&scope=read:user,user:email`
+
 const { handleError } = useErrorHandler()
 
 async function onSubmit(event: FormSubmitEvent<LoginUser>) {
@@ -48,5 +50,8 @@ async function onSubmit(event: FormSubmitEvent<LoginUser>) {
       </UFormGroup>
       <UButton type="submit">Log in</UButton>
     </UForm>
+    <div class="mt-4 flex">
+      <UButton icon="carbon:logo-github" color="gray" :to="githubOAuthUrl"></UButton>
+    </div>
   </NuxtLayout>
 </template>
