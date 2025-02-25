@@ -12,7 +12,9 @@ const state = reactive({
   password: undefined
 })
 
-const githubOAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=http://localhost:3000/api/auth/github&scope=read:user,user:email`
+const client_id = process.env.GITHUB_CLIENT_ID
+const redirect_uri = `${process.env.APP_URL}/api/auth/github`
+const githubOAuthUrl = `https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}/api/auth/github&scope=read:user,user:email`
 
 const { handleError } = useErrorHandler()
 
