@@ -8,8 +8,8 @@ const currentNote = ref<ExtendedNote | null>(null)
 const currentNoteText = ref<string>('')
 const currentNoteTitle = ref<string>('')
 const isInitialSet = ref(false)
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const isInfoOpen = ref(false)
+const titleRef = ref<HTMLInputElement | null>(null)
 
 const isSidebarOpen = ref(true)
 const toggleSidebar = () => {
@@ -66,7 +66,6 @@ function setCurrentNote(note: ExtendedNote) {
   }
   nextTick(() => {
     isInitialSet.value = false
-    textareaRef.value?.focus()
   })
 }
 
@@ -104,25 +103,47 @@ const updateNote = useDebounceFn(async () => {
   }
 }, 500)
 
-// Watch for changes in note text
-watch(currentNoteText, () => {
-  if (currentNote.value && !isInitialSet.value) {
+const handleAutoCreate = useDebounceFn(async () => {
+  if (!currentNote.value && (currentNoteText.value || currentNoteTitle.value)) {
+    await createNote()
+    // Update the newly created note with the input values
+    updateNote()
+  }
+}, 500)
+
+watch(currentNoteText, (newValue) => {
+  if (newValue && !currentNote.value) {
+    handleAutoCreate()
+  } else if (currentNote.value && !isInitialSet.value) {
     updateNote()
   }
 })
 
-// Add title watch
-watch(currentNoteTitle, () => {
-  if (currentNote.value && !isInitialSet.value) {
+watch(currentNoteTitle, (newValue) => {
+  if (newValue && !currentNote.value) {
+    handleAutoCreate()
+  } else if (currentNote.value && !isInitialSet.value) {
     updateNote()
   }
 })
 
-// Add createNote
-async function createNote() {
+async function createNote(options?: { clickNewNote?: boolean }) {
+  if (options?.clickNewNote) {
+    currentNote.value = null
+    currentNoteText.value = ''
+    currentNoteTitle.value = ''
+    nextTick(() => {
+      titleRef.value?.focus()
+    })
+  }
+
   try {
     const note = await $fetch<Note>('/api/notes', {
-      method: 'POST'
+      method: 'POST',
+      body: {
+        text: currentNoteText.value,
+        title: currentNoteTitle.value
+      }
     })
 
     const extendedNote: ExtendedNote = {
@@ -130,10 +151,7 @@ async function createNote() {
       updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD HH:mm:ss').value
     }
 
-    // Add to notes list
     notes.value = [extendedNote, ...(notes.value ?? [])]
-
-    // Set as current note
     setCurrentNote(extendedNote)
   } catch (error) {
     handleError(error)
@@ -175,18 +193,18 @@ async function deleteNote(noteId: number) {
           <Settings />
         </div>
         <div class="overflow-y-auto">
-          <div class="mb-1" v-if="todayNotes.length">Today</div>
+          <div class="mb-1 text-gray-400" v-if="todayNotes.length">Today</div>
           <div>
             <NoteListItem class="mb-1" v-for="note in todayNotes" :key="note.id" :note="note"
               @click="setCurrentNote(note)" :active="note.id === currentNote?.id">
             </NoteListItem>
           </div>
-          <div class="mb-1 mt-4" v-if="yesterdayNotes.length">Yesterday</div>
+          <div class="mb-1 mt-4 text-gray-400" v-if="yesterdayNotes.length">Yesterday</div>
           <div>
             <NoteListItem class="mb-1" v-for="note in yesterdayNotes" :key="note.id" :note="note"
               :active="note.id === currentNote?.id" @click="setCurrentNote(note)"></NoteListItem>
           </div>
-          <div class="mb-1 mt-4" v-if="earlierNotes.length">Earlier</div>
+          <div class="mb-1 mt-4 text-gray-400" v-if="earlierNotes.length">Earlier</div>
           <div>
             <NoteListItem class="mb-1" v-for="note in earlierNotes" :key="note.id" :note="note"
               :active="note.id === currentNote?.id" @click="setCurrentNote(note)">
@@ -201,7 +219,7 @@ async function deleteNote(noteId: number) {
       <div class="flex items-center justify-between p-4">
         <UButton color="gray" variant="ghost"
           :icon="isSidebarOpen ? 'carbon:side-panel-close' : 'carbon:side-panel-open'" @click="toggleSidebar" />
-        <UButton color="gray" variant="ghost" icon="carbon:pen-fountain" @click="createNote">
+        <UButton color="gray" variant="ghost" icon="carbon:pen-fountain" @click="createNote({ clickNewNote: true })">
           New Note
         </UButton>
         <NoteSettings>
@@ -222,11 +240,12 @@ async function deleteNote(noteId: number) {
       </div>
       <div class="flex flex-grow justify-center p-6">
         <div class="flex w-full max-w-[30rem] flex-col">
-          <input v-model="currentNoteTitle" class="mb-4 bg-transparent text-xl font-medium outline-none"
-            placeholder="Untitled" />
-          <textarea ref="textareaRef" v-model="currentNoteText"
-            class="w-full flex-grow resize-none overflow-y-auto outline-none" placeholder="Start writing..."></textarea>
-          <div class="text-xs text-gray-400">{{ currentNote ? currentNote.updatedDate : '' }}
+          <input ref="titleRef" v-model="currentNoteTitle" class="mb-4 bg-transparent text-xl font-medium outline-none"
+            placeholder="Start typing title..." />
+          <textarea v-model="currentNoteText" class="w-full flex-grow resize-none overflow-y-auto outline-none"
+            placeholder="Start writing..."></textarea>
+          <div class="text-xs text-gray-400">
+            {{ currentNote ? currentNote.updatedDate : '' }}
           </div>
         </div>
       </div>

@@ -5,10 +5,12 @@ export default defineEventHandler(async (event) => {
   try {
     const { id: userId } = verifyJwt(event)
 
+    const body = await readBody(event)
+
     const note = await prisma.note.create({
       data: {
-        title: '',
-        text: '',
+        title: body.title || '',
+        text: body.text || '',
         userId
       }
     })
