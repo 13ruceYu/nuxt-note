@@ -9,6 +9,7 @@ const currentNoteText = ref<string>('')
 const currentNoteTitle = ref<string>('')
 const isInitialSet = ref(false)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const isInfoOpen = ref(false)
 
 const isSidebarOpen = ref(true)
 const toggleSidebar = () => {
@@ -20,7 +21,7 @@ onMounted(async () => {
   notes.value = res.map(note => {
     return {
       ...note,
-      updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD').value,
+      updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD HH:mm:ss').value,
     }
   })
 })
@@ -92,11 +93,11 @@ const updateNote = useDebounceFn(async () => {
             ...note,
             text: currentNoteText.value,
             title: currentNoteTitle.value,
-            updatedAt: new Date(updatedNote.updatedAt),
-            updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD HH:MM:ss').value
+            updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD HH:mm:ss').value
           }
           : note
       )
+      currentNote.value.updatedDate = useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD HH:mm:ss').value
     }
   } catch (error) {
     handleError(error)
@@ -124,10 +125,9 @@ async function createNote() {
       method: 'POST'
     })
 
-    // Add updatedDate to the new note
     const extendedNote: ExtendedNote = {
       ...note,
-      updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD').value
+      updatedDate: useDateFormat(note.updatedAt, 'YYYY-MM-DD HH:mm:ss').value
     }
 
     // Add to notes list
@@ -205,7 +205,16 @@ async function deleteNote(noteId: number) {
           New Note
         </UButton>
         <NoteSettings>
-          <UButton :disabled="!currentNote" color="gray" variant="ghost" icon="carbon:information">Detail</UButton>
+          <UButton :disabled="!currentNote" @click="isInfoOpen = !isInfoOpen" color="gray" variant="ghost"
+            icon="carbon:information">Detail</UButton>
+          <UModal v-model="isInfoOpen">
+            <div class="p-4">
+              <div class="text-lg font-medium">Title: {{ currentNote?.title || 'Untitled' }}</div>
+              <div class="text-sm text-gray-500">Created Date: {{ useDateFormat(currentNote?.createdAt, `YYYY-MM-DD
+                HH:mm:ss`) }}</div>
+              <div class="text-sm text-gray-500">Updated Date: {{ currentNote?.updatedDate }}</div>
+            </div>
+          </UModal>
           <UButton :disabled="!currentNote" color="red" variant="ghost" icon="carbon:trash-can"
             @click="deleteNote(currentNote!.id)">Delete
           </UButton>
@@ -213,12 +222,12 @@ async function deleteNote(noteId: number) {
       </div>
       <div class="flex flex-grow justify-center p-6">
         <div class="flex w-full max-w-[30rem] flex-col">
-          <div class="h-10 text-sm text-gray-400">{{ useDateFormat(currentNote?.updatedAt, 'YYYY-MM-DD HH:MM:ss') }}
-          </div>
           <input v-model="currentNoteTitle" class="mb-4 bg-transparent text-xl font-medium outline-none"
             placeholder="Untitled" />
           <textarea ref="textareaRef" v-model="currentNoteText"
             class="w-full flex-grow resize-none overflow-y-auto outline-none" placeholder="Start writing..."></textarea>
+          <div class="text-xs text-gray-400">{{ currentNote ? currentNote.updatedDate : '' }}
+          </div>
         </div>
       </div>
     </div>
