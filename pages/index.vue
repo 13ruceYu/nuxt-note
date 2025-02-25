@@ -89,9 +89,11 @@ const updateNote = useDebounceFn(async () => {
       notes.value = notes.value.map(note =>
         note.id === currentNote.value?.id
           ? {
-            ...note,
+            ...updatedNote,
             text: currentNoteText.value,
             title: currentNoteTitle.value,
+            createdAt: new Date(updatedNote.createdAt),
+            updatedAt: new Date(updatedNote.updatedAt),
             updatedDate: useDateFormat(updatedNote.updatedAt, 'YYYY-MM-DD HH:mm:ss').value
           }
           : note
