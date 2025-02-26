@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '#ui/types'
 import { signupSchema, type SignupUser } from '~/types/schema'
+import { useUserStore } from '~/store/user'
 
 useHead({
   title: 'Sign up'
@@ -17,16 +18,22 @@ const { handleError } = useErrorHandler()
 
 async function onSubmit(event: FormSubmitEvent<SignupUser>) {
   try {
-    await $fetch('/api/signup', {
+    const res = await $fetch('/api/signup', {
       method: 'POST',
       body: JSON.stringify(event.data)
     })
+
+    // Set user in store and redirect
+    const userStore = useUserStore()
+    userStore.setUser(res)
+
     toast.add({
       title: 'Success',
       description: 'Account created successfully',
-      callback: () => router.push('/'),
-      timeout: 1000
+      timeout: 2000
     })
+
+    router.push('/')
   } catch (error: any) {
     handleError(error)
   }
@@ -35,13 +42,12 @@ async function onSubmit(event: FormSubmitEvent<SignupUser>) {
 
 <template>
   <NuxtLayout name="auth">
-    <div class="my-4">
-      <div>Create your account</div>
-      <div class="text-sm text-gray-400">
-        Already have an account?
-        <NuxtLink to="/login" class="text-primary">Log in</NuxtLink>
-      </div>
-    </div>
+    <div class="text-xl">Create your account</div>
+
+    <OAuthProviders>
+      <template #description>Sign up for Nuxt Note with:</template>
+    </OAuthProviders>
+
     <UForm :schema="signupSchema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Email" name="email">
         <UInput size="md" type="email" v-model="state.email" />
@@ -49,7 +55,12 @@ async function onSubmit(event: FormSubmitEvent<SignupUser>) {
       <UFormGroup label="Password" name="password">
         <UInput size="md" v-model="state.password" type="password" />
       </UFormGroup>
-      <UButton type="submit">Sign up</UButton>
+      <UButton class="flex w-full justify-center" size="md" variant="outline" type="submit">Sign up</UButton>
     </UForm>
+
+    <div class="mt-6 text-sm text-gray-400">
+      Already have an account?
+      <NuxtLink to="/login" class="text-primary">Log in</NuxtLink>
+    </div>
   </NuxtLayout>
 </template>

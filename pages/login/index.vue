@@ -12,10 +12,6 @@ const state = reactive({
   password: undefined
 })
 
-const client_id = process.env.GITHUB_CLIENT_ID
-const redirect_uri = `${process.env.APP_URL}`
-const githubOAuthUrl = `https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}/api/auth/github&scope=read:user,user:email`
-
 const { handleError } = useErrorHandler()
 
 async function onSubmit(event: FormSubmitEvent<LoginUser>) {
@@ -35,14 +31,12 @@ async function onSubmit(event: FormSubmitEvent<LoginUser>) {
 
 <template>
   <NuxtLayout name="auth">
-    <div class="my-4">
-      <div>Log in to your account</div>
-      <div class="text-sm text-gray-400">
-        Don't have a account?
-        <NuxtLink to="/signup" class="text-primary">Sign up</NuxtLink>
-        your account
-      </div>
-    </div>
+    <div class="text-xl">Log in to your account</div>
+
+    <OAuthProviders>
+      <template #description>Connect to Nuxt Note with:</template>
+    </OAuthProviders>
+
     <UForm :schema="loginSchema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Email" name="email">
         <UInput size="md" type="email" v-model="state.email" />
@@ -50,10 +44,13 @@ async function onSubmit(event: FormSubmitEvent<LoginUser>) {
       <UFormGroup label="Password" name="password">
         <UInput size="md" v-model="state.password" type="password" />
       </UFormGroup>
-      <UButton type="submit">Log in</UButton>
+      <UButton class="flex w-full justify-center" size="md" variant="outline" type="submit">Log in</UButton>
     </UForm>
-    <div class="mt-4 flex">
-      <UButton icon="carbon:logo-github" color="gray" :to="githubOAuthUrl"></UButton>
+
+    <div class="mt-6 text-sm text-gray-400">
+      New to Neon?
+      <NuxtLink to="/signup" class="text-primary">Sign up</NuxtLink>
+      for an account
     </div>
   </NuxtLayout>
 </template>

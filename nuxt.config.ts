@@ -24,4 +24,14 @@ export default defineNuxtConfig({
       ]
     }
   },
+  runtimeConfig: {
+    // Private keys are only available on the server
+    githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
+
+    // Public keys that are exposed to the client
+    public: {
+      githubClientId: process.env.GITHUB_CLIENT_ID,
+      appUrl: process.env.APP_URL || 'http://localhost:3000',
+    }
+  }
 })
