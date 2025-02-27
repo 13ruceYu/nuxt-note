@@ -48,7 +48,7 @@ async function onSubmit(event: FormSubmitEvent<LoginUser>) {
     </UForm>
 
     <div class="mt-6 text-sm text-gray-400">
-      New to Neon?
+      New to Nuxt Note?
       <NuxtLink to="/signup" class="text-primary">Sign up</NuxtLink>
       for an account
     </div>
