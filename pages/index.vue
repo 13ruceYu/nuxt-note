@@ -185,7 +185,7 @@ async function deleteNote(noteId: number) {
 <template>
   <div class="flex h-screen">
     <div
-      class="fixed z-10 h-screen shrink-0 overflow-hidden bg-neutral-100 transition-all duration-300 dark:bg-neutral-900 md:relative"
+      class="fixed z-10 h-screen shrink-0 overflow-hidden bg-zinc-100 transition-all duration-300 dark:bg-zinc-900 md:relative"
       :class="[
         isSidebarOpen ? 'w-[20rem]' : 'w-0',
       ]">
@@ -253,7 +253,7 @@ async function deleteNote(noteId: number) {
       </div>
     </div>
     <div @click="toggleSidebar" v-if="isSidebarOpen"
-      class="absolute bottom-0 left-0 right-0 top-0 bg-neutral-900/60 md:hidden"></div>
+      class="absolute bottom-0 left-0 right-0 top-0 bg-zinc-900/60 md:hidden"></div>
   </div>
 </template>
 
