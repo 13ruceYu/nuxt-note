@@ -2,9 +2,25 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@vueuse/nuxt', '@pinia/nuxt', '@nuxt/fonts', 'pinia-plugin-persistedstate/nuxt'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/icon',
+    '@vueuse/nuxt',
+    '@pinia/nuxt',
+    '@nuxt/fonts',
+    'pinia-plugin-persistedstate/nuxt',
+    '@nuxt/image'
+  ],
   colorMode: {
     preference: 'dark',
+  },
+  icon: {
+    customCollections: [
+      {
+        prefix: 'my-icon',
+        dir: './assets/my-icons'
+      },
+    ]
   },
   app: {
     head: {

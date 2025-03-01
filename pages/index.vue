@@ -175,6 +175,7 @@ async function deleteNote(noteId: number) {
     if (currentNote.value?.id === noteId) {
       currentNote.value = null
       currentNoteText.value = ''
+      currentNoteTitle.value = ''
     }
   } catch (error) {
     handleError(error)

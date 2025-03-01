@@ -4,5 +4,6 @@
   },
   "editor.quickSuggestions": {
     "strings": true
-  }
+  },
+  "svg.preview.background": "dark-transparent"
 }
