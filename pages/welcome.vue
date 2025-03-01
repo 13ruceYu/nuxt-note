@@ -41,19 +41,21 @@ const logos = [
         </ul>
       </nav>
     </div>
-    <h1 class="mt-24 text-5xl">Welcome to <span class="text-primary">Nuxt Note</span></h1>
-    <p class="my-9">Your personal note-taking application built with Nuxt. Start organizing your thoughts and ideas
-      efficiently.</p>
-    <div class="z-10">
-      <UButton class="z-10 gap-1 rounded-full" size="xl" to="/login" variant="outline">
-        <Icon class="size-6" name="my-icon:logo"></Icon> Writing now
-      </UButton>
-    </div>
-    <div class="w-max-[600px] w-full">
-      <NuxtImg class="overflow-hidden rounded-lg border border-neutral-600 shadow-lg" src="/images/app-screenshot.png">
-      </NuxtImg>
-    </div>
-    <div class="w-max-[600px] w-full">
+    <div class="flex flex-col items-center justify-center px-2">
+      <h1 class="mt-24 text-3xl md:text-5xl">Welcome to <span class="text-primary">Nuxt Note</span></h1>
+      <p class="my-9 text-sm">Your personal note-taking application built with Nuxt. Start organizing your thoughts and
+        ideas
+        efficiently.</p>
+      <div class="z-10">
+        <UButton class="z-10 gap-1 rounded-full" size="xl" to="/login" variant="outline">
+          <Icon class="size-6" name="my-icon:logo"></Icon> Writing now
+        </UButton>
+      </div>
+      <div class="mt-8 w-full max-w-[600px]">
+        <NuxtImg class="overflow-hidden rounded-lg border border-neutral-600 shadow-lg"
+          src="/images/app-screenshot.png">
+        </NuxtImg>
+      </div>
       <AnimatedLogoCloud :logos title="Tech Stack" />
     </div>
   </AuroraBackground>
@@ -61,6 +63,6 @@ const logos = [
 
 <style scoped lang="postcss">
 .nav-item {
-  @apply cursor-pointer rounded-md px-2 py-1 hover:bg-neutral-800/80 transition-all duration-500;
+  @apply text-sm cursor-pointer rounded-md px-2 py-1 hover:bg-neutral-800/80 transition-all duration-500;
 }
 </style>
