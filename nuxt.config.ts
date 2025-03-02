@@ -29,14 +29,31 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content: 'Nuxt Note'
-        }
+        },
+        // Open Graph / Social Media Meta Tags
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: 'Nuxt Note' },
+        { property: 'og:description', content: 'Nuxt Note - Your personal note taking app' },
+        { property: 'og:image', content: '/og-image.png' },
+        { property: 'og:url', content: process.env.APP_URL || 'http://localhost:3000' },
+        // Twitter Card
+        { name: 'twitter:card', content: 'summary_large_image' },
+        // Apple specific meta tags
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+        { name: 'apple-mobile-web-app-title', content: 'Nuxt Note' }
       ],
       link: [
         {
           rel: 'icon',
           type: 'image/x-icon',
           href: '/logo.png'
-        }
+        },
+        // Apple Touch Icons
+        { rel: 'apple-touch-icon', href: '/logo.png' },
+        { rel: 'apple-touch-icon', sizes: '152x152', href: '/logo.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logo.png' },
+        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#5bbad5' }
       ]
     }
   },
